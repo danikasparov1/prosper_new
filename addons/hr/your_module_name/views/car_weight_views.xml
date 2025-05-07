@@ -1,0 +1,71 @@
+<odoo>
+    <record id="view_car_weight_form" model="ir.ui.view">
+        <field name="name">car.weight.form</field>
+        <field name="model">car.weight</field>
+        <field name="arch" type="xml">
+            <form string="Car Weight">
+                <sheet>
+                    <group>
+                    <field name="supplier_name" invisible="operation_type == 'exit'"/>
+                        <field name="source_document"/>
+                        <field name="operation_type"/>
+                        <field name="product_loaded"/>
+                        <field name="vender_name"/>
+                        <field name="driver_name"/> <!-- Add driver name field -->
+                    <field name="plate_number"/> <!-- Add plate number field -->
+                    </group>
+                    <group>
+                        <field name="entry_weight"/>
+                        <field name="exit_weight"/>
+                        <field name="result_weight" readonly="1"/>
+                        <field name="linked_car_id"/>
+                        <!-- <field name="supplier_name"/> -->
+                        
+                        <!-- Memo Number: Visible only when operation_type is 'exit' -->
+                        <field name="memo_number"   invisible="operation_type == 'entry'"/>
+                    </group>
+                    <group>
+                        <field name="entry_time"/>
+                        <field name="exit_time"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+        <record id="seq_car_weight" model="ir.sequence">
+        <field name="name">Car Weight Sequence</field>
+        <field name="code">car.weight</field>
+        <field name="prefix">CW-</field>
+        <field name="padding">5</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+    </record>
+
+    <record id="view_car_weight_tree" model="ir.ui.view">
+        <field name="name">car.weight.tree</field>
+        <field name="model">car.weight</field>
+        <field name="arch" type="xml">
+            <tree string="Car Weights">
+                <field name="source_document"/>
+                <field name="operation_type"/>
+                <field name="entry_weight"/>
+                <field name="exit_weight"/>
+                <field name="result_weight"/>
+                <field name="linked_car_id"/>
+                    <field name="driver_name"/> <!-- Add driver name field -->
+                    <field name="plate_number"/> <!-- Add plate number field -->
+                    <field name="supplier_name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_car_weight" model="ir.actions.act_window">
+        <field name="name">Car Weights</field>
+        <field name="res_model">car.weight</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_car_weight_root" parent="mrp.menu_mrp_root" name="Car Weight Management" sequence="10"/>
+    <menuitem id="menu_car_weight" name="Car Weights" parent="menu_car_weight_root" action="action_car_weight" sequence="10"/>
+</odoo>

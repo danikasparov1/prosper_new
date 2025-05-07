@@ -1,0 +1,278 @@
+<odoo>
+    <!-- <record id="view_annual_production_plan_form" model="ir.ui.view">
+        <field name="name">annual.production.plan.form</field>
+        <field name="model">annual.production.plan</field>
+        <field name="arch" type="xml">
+            <form string="Annual Production Plan">
+                <header>
+                    <button name="action_view_purchases" type="object" string="Purchases" class="oe_highlight"/>
+                    <button name="action_view_stock_moves" type="object" string="Stock Moves"/>
+                   
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="year"/>
+                        <field name="product_id"/>
+                        <field name="planned_quantity"/>
+                        <field name="is_produced" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="BOM Components">
+                            <field name="bom_component_ids" readonly="1">
+                                <tree>
+                                    <field name="component_name"/>
+                                   
+                                    <field name="consumed_quantity"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record> -->
+
+    <record id="view_annual_production_plan_form" model="ir.ui.view">
+    <field name="name">annual.production.plan.form</field>
+    <field name="model">annual.production.plan</field>
+    <field name="arch" type="xml">
+        <form string="Annual Production Plan">
+            <!-- <header>
+                <button name="action_view_purchases" type="object" string="Purchases" class="oe_highlight"/>
+                <button name="action_view_stock_moves" type="object" string="Stock Moves"/>
+             
+            </header> -->
+
+            <sheet>                
+            <div class="oe_button_box" name="button_box">
+                <button 
+                    name="action_view_purchase_orders" 
+                    type="object" 
+                    class="oe_stat_button"
+                    icon="fa-shopping-cart">
+                    <field name="purchase_order_count" widget="statinfo" string="Purchases"/>
+                </button>
+            </div>
+
+                <group>
+                    <field name="name"/>
+                    <field name="year"/>
+                    <field name="product_id"/>
+                    <field name="planned_quantity"/>
+                    <field name="is_produced" readonly="1"/>
+                </group>
+                <notebook>
+                 <button name="action_view_purchases" type="object" string="Purchases" class="oe_highlight"/>
+                    <page string="BOM Components">
+                        <field name="bom_component_ids" readonly="1">
+                            <tree>
+                                <field name="component_name"/>
+                                <field name="consumed_quantity"/>
+                                <field name="annual_planned_quantity"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+<!-- Add to product form view -->
+<record id="product_product_view_form_inherit" model="ir.ui.view">
+    <field name="name">product.product.view.form.inherit</field>
+    <field name="model">product.product</field>
+    <field name="inherit_id" ref="product.product_normal_form_view"/>
+    <field name="arch" type="xml">
+        <xpath expr="//sheet" position="inside">
+            <div class="oe_button_box" name="button_box">
+                <button 
+                    name="action_view_annual_plan_purchases" 
+                    type="object" 
+                    class="oe_stat_button"
+                    icon="fa-shopping-cart">
+                    <field name="annual_planned_quantity" widget="statinfo" string="Planned Purchases"/>
+                </button>
+            </div>
+        </xpath>
+    </field>
+</record>
+<!-- Add to your purchase order line form view -->
+<record id="purchase_order_line_form_inherit" model="ir.ui.view">
+    <field name="name">purchase.order.line.form.inherit</field>
+    <field name="model">purchase.order.line</field>
+    <field name="inherit_id" ref="purchase.purchase_order_line_form2"/>
+    <field name="arch" type="xml">
+        <field name="product_id" position="after">
+            <field name="annual_plan_component_id" widget="many2one" options="{'no_open': True}"/>
+        </field>
+    </field>
+</record>
+    <!-- <record id="view_product_form_annual_plan_woeiruio" model="ir.ui.view">
+        <field name="name">product.form.annual.plan</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='sales']" position="after">
+                <page string="Production Planning">
+                    <group>
+                        <field name="annual_planned_quantity"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record> -->
+
+
+    <!-- For product.product (variants) -->
+    <record id="view_product_form_annual_plan_inherit" model="ir.ui.view">
+        <field name="name">product.form.annual.plan.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='list_price']" position="after">
+                <field name="annual_planned_quantity" 
+                       string="Annual Plan Qty"
+                       readonly="1"
+                       help="Total planned quantity from production plans"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- For product.template -->
+    <record id="view_product_template_form_annual_plan_inherit" model="ir.ui.view">
+        <field name="name">product.template.form.annual.plan.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='taxes_id']" position="after">
+                <field name="annual_planned_quantity" 
+                       string="Annual Plan Qty"
+                       readonly="1"
+                       help="Total planned quantity across all variants"/>
+            </xpath>
+        </field>
+    </record>
+
+
+        <record id="view_product_form_annual_plan_inherit" model="ir.ui.view">
+        <field name="name">product.form.annual.plan.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Find the list_price field and insert after it -->
+            <xpath expr="//field[@name='list_price']" position="after">
+                <field name="annual_planned_quantity" 
+                       string="Annual Planned Qty"
+                       groups="your_module.group_your_user_group"/>
+            </xpath>
+        </field>
+    </record>
+
+
+
+    <record id="view_bom_form_inherit_wastage" model="ir.ui.view">
+        <field name="name">mrp.bom.form.inherit.wastage</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Insert field in the tree view of bom_line_ids under Components tab -->
+            <xpath expr="//page[@name='components']/field[@name='bom_line_ids']/tree" position="inside">
+                <field name="wastage_tolerance"/>
+                <field name="consumed_quantity"/> 
+            </xpath>
+        </field>
+    </record>
+
+
+
+    <record id="view_annual_production_plan_form_new_no_deplucate" model="ir.ui.view">
+        <field name="name">annual.production.plan.form</field>
+        <field name="model">annual.production.plan</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="year"/>
+                        <field name="product_id"/>
+                        <field name="planned_quantity"/>
+                        <field name="is_produced"/>
+                    </group>
+                    <field name="bom_component_ids">
+                        <tree editable="false">
+                            <field name="component_id"/>
+                            <!-- <field name="quantity" invisible="1"/> -->
+                            <field name="consumed_quantity"/>
+                            <field name="annual_planned_quantity" digits="Product Unit of Measure"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+
+
+
+    <record id="view_annual_production_plan_tree" model="ir.ui.view">
+        <field name="name">annual.production.plan.tree</field>
+        <field name="model">annual.production.plan</field>
+        <field name="arch" type="xml">
+            <tree string="Annual Production Plans">
+                <field name="name"/>
+                <field name="year"/>
+                <field name="product_id"/>
+                <field name="planned_quantity"/>
+                <field name="is_produced"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_annual_production_plan" model="ir.actions.act_window">
+        <field name="name">Annual Production Plans</field>
+        <field name="res_model">annual.production.plan</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="view_mrp_production_form_inherit_ref_number" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherit.reference.number</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="before">
+                <field name="reference_number"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- <record id="view_mrp_production_tree_inherit_ref_number" model="ir.ui.view">
+        <field name="name">mrp.production.tree.inherit.reference.number</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="reference_number"/>
+            </xpath>
+        </field>
+    </record> -->
+
+    <odoo>
+        <record id="view_mrp_production_tree_inherit_ref_number" model="ir.ui.view">
+            <field name="name">mrp.production.tree.inherit.reference.number</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree/field[1]" position="before">
+                    <field name="reference_number" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+    </odoo>
+
+
+    <menuitem id="menu_annual_production_plan_root" name="Production Plans" sequence="10"/>
+    <menuitem id="menu_annual_production_plan" name="Annual Production Plans" parent="menu_annual_production_plan_root" action="action_annual_production_plan" sequence="10"/>
+</odoo>
